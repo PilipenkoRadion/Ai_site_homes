@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AiHome — Вход / Регистрация</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #111;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            text-align: center;
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            background: #2a0000;
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 40px 12px 14px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .register-fields {
+            display: none;
+        }
+
+        .register-fields.show {
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-register {
+            background: #333;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="container">
+
+            <div class="logo">
+                <span class="logo-icon">m</span>
+                <span>AiHome</span>
+            </div>
+
+            <h1 id="formTitle">Вход в AiHome</h1>
+
+            <div class="description">
+                AiHome — стартап в разработке.<br>Введите данные
+            </div>
+
+            {% if error %}
+            <div class="error-message" id="errorMessage">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+                <input type="hidden" name="action" id="action" value="login">
+
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" name="user_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                    <span class="toggle-password" id="togglePassword">👁</span>
+                </div>
+
+                <div class="register-fields" id="registerFields">
+                    <div class="form-group">
+                        <label>Фамилия</label>
+                        <input type="text" name="surname">
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="tel" name="phone_number">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-login" id="submitBtn">Войти</button>
+                    <button type="button" class="btn-register" id="toggleBtn">Регистрация</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        const currentAction = "{{ action | default('login') | e }}";
+        const passwordInput = document.getElementById("password");
+        const togglePassword = document.getElementById("togglePassword");
+
+        togglePassword.onclick = () => {
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        };
+
+        const toggleBtn = document.getElementById("toggleBtn");
+        const submitBtn = document.getElementById("submitBtn");
+        const registerFields = document.getElementById("registerFields");
+        const formTitle = document.getElementById("formTitle");
+        const actionInput = document.getElementById("action");
+
+        let isRegister = false;
+
+        toggleBtn.onclick = () => {
+            isRegister = !isRegister;
+
+            registerFields.classList.toggle("show");
+
+            if (isRegister) {
+                formTitle.textContent = "Регистрация в AiHome";
+                submitBtn.textContent = "Зарегистрироваться";
+                toggleBtn.textContent = "Отмена";
+                actionInput.value = "register";
+            } else {
+                formTitle.textContent = "Вход в AiHome";
+                submitBtn.textContent = "Войти";
+                toggleBtn.textContent = "Регистрация";
+                actionInput.value = "login";
+            }
+        };
+
+        const errorBox = document.getElementById("errorMessage");
+        if (errorBox) {
+            setTimeout(() => errorBox.classList.add("fade-out"), 2000);
+            setTimeout(() => errorBox.remove(), 2500);
+        }
+
+        if (currentAction === "register") {
+            toggleBtn.click();
+        }
+    </script>
+
+</body>
+
+</html>

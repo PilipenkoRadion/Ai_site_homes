@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiHome | Наработки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 20px 0;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header__content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .logo__icon {
+            font-size: 32px;
+            font-weight: 900;
+            font-style: italic;
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a.active {
+            color: #a855f7;
+        }
+
+        /* Розовое пятнышко только для десктопных ссылок */
+        @media (min-width: 769px) {
+            nav a {
+                position: relative;
+                z-index: 1;
+            }
+
+            nav a::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 0;
+                height: 0;
+                background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, transparent 70%);
+                border-radius: 50%;
+                transition: all 0.4s ease;
+                z-index: -1;
+                opacity: 0;
+            }
+
+            nav a:hover::before {
+                width: 120px;
+                height: 120px;
+                opacity: 1;
+            }
+
+            nav a:hover {
+                color: #a855f7;
+            }
+        }
+
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .burger span {
+            width: 30px;
+            height: 3px;
+            background: #fff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .burger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .burger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        /* Purple glow effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            right: 20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Main content */
+        main {
+            position: relative;
+            z-index: 10;
+            padding: 60px 0;
+            padding-bottom: 120px;
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            margin-top: 0;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .text-content p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .diagram-section {
+            position: sticky;
+            top: 100px;
+        }
+
+        .diagram-container {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 40px;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .diagram-placeholder {
+            width: 100%;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Device mockup */
+        .device-mockup {
+            width: 220px;
+            height: 450px;
+            background: #000;
+            border: 3px solid #333;
+            border-radius: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .device-logo {
+            font-size: 48px;
+            font-weight: 900;
+            font-style: italic;
+            color: #fff;
+            opacity: 0.3;
+        }
+
+        .screen-label {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-left: 60px;
+        }
+
+        .control-btn {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 20px 25px;
+            color: #fff;
+            font-size: 14px;
+            text-align: left;
+            min-width: 200px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn::after {
+            content: '';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+        }
+
+        .control-btn:hover {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+            transform: translateX(-5px);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .control-btn:hover::after {
+            background: #a855f7;
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            background: linear-gradient(to top, #000 0%, transparent 100%);
+            z-index: 10;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .diagram-section {
+                position: static;
+            }
+
+            .diagram-placeholder {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .control-buttons {
+                margin-left: 0;
+                margin-top: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background: #0a0a0a;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 40px;
+                transition: right 0.3s ease;
+                z-index: 100;
+            }
+
+            nav.active {
+                right: 0;
+            }
+
+            nav a {
+                font-size: 24px;
+            }
+
+            .burger {
+                display: flex;
+            }
+
+            h1 {
+                font-size: 36px;
+                margin-bottom: 50px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .glow-bg {
+                width: 400px;
+                height: 400px;
+                right: -20%;
+            }
+
+            .device-mockup {
+                width: 180px;
+                height: 380px;
+            }
+
+            .control-btn {
+                min-width: 160px;
+                padding: 15px 20px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logo__icon {
+                font-size: 24px;
+            }
+
+            .text-content p {
+                font-size: 14px;
+            }
+
+            .diagram-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow-bg"></div>
+
+    <header>
+        <div class="container">
+            <div class="header__content">
+                <a href="/about_product" class="logo">
+                    <span class="logo__icon">m</span>
+                    <span>AiHome | Предпросмотр</span>
+                </a>
+                <nav id="nav">
+                    <a href="{{ url_for('about_product') }}">О продукте</a>
+                    <a href="{{ url_for('drafts') }}" class="active">Наработки</a>
+                    <a href="{{ url_for('plans') }}">Планируем</a>
+                    <a href="{{ url_for('contact') }}">Контакты</a>
+                </nav>
+                <div class="burger" id="burger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Наработки</h1>
+
+            <div class="content-wrapper">
+                <div class="text-content">
+                    <h2>Основной блок управления умным домом</h2>
+                    <img src="your-diagram-here.png" alt="Diagram"
+                        style="width: 100%; max-width: 500px; margin: 40px 0; display: none;">
+                </div>
+
+                <div class="diagram-section">
+                    <div class="diagram-container">
+                        <div class="diagram-placeholder">
+                            <div class="device-mockup">
+                                <div class="device-screen">
+                                    <div class="device-logo">m</div>
+                                </div>
+                                <div class="screen-label">Сенсорный экран</div>
+                            </div>
+
+                            <div class="control-buttons">
+                                <div class="control-btn">
+                                    Подтверждение<br>действия
+                                </div>
+                                <div class="control-btn">
+                                    Регулировка/<br>Смена<br>режимов
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>2025 AiHome. Концепт-проект.<br>
+            Вся информация носит ознакомительный<br>
+            характер и может быть изменена.</p>
+    </footer>
+
+    <script>
+        const burger = document.getElementById('burger');
+        const nav = document.getElementById('nav');
+
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+
+        nav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                burger.classList.remove('active');
+                nav.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

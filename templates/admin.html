@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель | AiHome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 12px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #a855f7;
+        }
+
+        .badge {
+            background: #a855f7;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .logout-btn {
+            padding: 10px 24px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #444;
+        }
+
+        .messages-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .message-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            transition: 0.3s;
+        }
+
+        .message-card:hover {
+            border-color: #a855f7;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .message-card.unread {
+            border-left: 4px solid #a855f7;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .message-date {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .message-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .message-status.unread {
+            background: #a855f7;
+            color: #fff;
+        }
+
+        .message-status.read {
+            background: #333;
+            color: #888;
+        }
+
+        .message-content {
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #0a0a0a;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .btn-mark {
+            background: #a855f7;
+            color: #fff;
+        }
+
+        .btn-mark:hover {
+            background: #c084fc;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .message-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>📊 Админ панель{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
+                </h1>
+            </div>
+            <a href="/logout" class="logout-btn">Выйти</a>
+            <a href="/about_product" class="logout-btn">На главную</a>
+        </header>
+        <div class="messages-grid">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="message-card {% if not message.is_read %}unread{% endif %}">
+                <div class="message-header">
+                    <span class="message-date">{{ message.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                    <span class="message-status {% if not message.is_read %}unread{% else %}read{% endif %}">
+                        {% if not message.is_read %}Новое{% else %}Прочитано{% endif %}
+                    </span>
+                </div>
+                <div class="message-content">{{ message.contact_info }}</div>
+                <div class="message-actions">
+                    {% if not message.is_read %}
+                    <a href="/admin/mark_read/{{ message.id }}" class="btn btn-mark">✓ Прочитано</a>
+                    {% endif %}
+                    <a href="/admin/delete/{{ message.id }}" class="btn btn-delete"
+                        onclick="return confirm('Удалить?')">🗑 Удалить</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <h2>Нет сообщений</h2>
+                <p>Контактные данные появятся здесь</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>
