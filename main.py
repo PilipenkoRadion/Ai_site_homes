@@ -25,6 +25,14 @@ class ContactMessage(db.Model):
     contact_info = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
+class EditText(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text_new = db.Column(db.Text, nullable=False) # Ограничение на текст можно поменять db.String(тут ваше значние сколько хотите)
+class Page(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
 # ====== Email ======
 SENDER_EMAIL: ClassVar[str] = "someadress@gmail.com"
 SENDER_PASSWORD: ClassVar[str] = "YOUR_SEC_PASSWORD"
@@ -114,6 +122,16 @@ def register():
             session["user_name"] = user_name
             return redirect("/about_product")
     return render_template("register.html", error=None, action="login")
+@app.route("/admin/edit_page/<string:page_name>", methods=["GET", "POST"])
+@admin_required
+def edit_page(page_name):
+    page = Page.query.filter_by(name=page_name).first_or_404()
+    if request.method == "POST":
+        page.title = request.form.get("title")
+        page.content = request.form.get("content")
+        db.session.commit()
+        return redirect("/admin")
+    return render_template("edit_page.html", page=page)
 
 
 @app.route("/about_product")
@@ -121,14 +139,12 @@ def about_product():
     if "user_name" in session:
         # Получаем пользователя из БД
         user = User.query.filter_by(user_name=session["user_name"]).first()
-
         # Проверяем, является ли пользователь админом
         is_admin = user.is_admin if user else False
-
         return render_template(
             "about_product.html",
             user_name=session["user_name"],
-            is_admin=is_admin,  # Передаем флаг админа в шаблон
+            is_admin=is_admin, # Передаем флаг админа в шаблон
         )
     return redirect("/register")
 
@@ -187,6 +203,42 @@ def logout():
 
 
 
+@app.route("/edit_text/edit/<int:text_id>", methods=["GET","POST"])
+@admin_required
+def edit_text(text_id):
+    text_new_first = EditText.query.get_or_404(text_id)
+    if request.method == "POST":
+        text_new_first.text_new = request.form["text_new"]
+        try:
+            db.session.commit()
+            return redirect(f"/admin/{text_new_first.text_new}")
+        except:
+            return "Ошибка, попробуйте ещё раз."
+    return render_template("admin.html", text_id=text_id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -197,6 +249,9 @@ def logout():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
+    text1 = EditText.query.get(1)
+    text2 = EditText.query.get(2)
+    text3 = EditText.query.get(3)
     if request.method == "POST":
         contact_info = request.form.get("contact_info")
         if contact_info and contact_info.strip():
@@ -208,7 +263,7 @@ def contact():
             )
         else:
             return render_template("contact.html", error="Пожалуйста, заполните поле.")
-    return render_template("contact.html")
+    return render_template("contact.html", text1=text1, text2=text2, text3=text3)
 
 
 # ====== Initialize DB ======

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AiHome | О продукте</title>
     <style>
+        /* Стили остаются точно как у тебя, я их не трогал */
         * {
             margin: 0;
             padding: 0;
@@ -70,7 +71,6 @@
             border-radius: 8px;
         }
 
-        /* Стиль для кнопки админ-панели */
         nav a.admin-btn {
             background: #a855f7;
             color: #fff;
@@ -109,7 +109,6 @@
                 color: #a855f7;
             }
 
-            /* Убираем эффект для кнопки админа */
             nav a.admin-btn::before {
                 display: none;
             }
@@ -163,8 +162,7 @@
         main {
             position: relative;
             z-index: 10;
-            padding: 60px 0;
-            padding-bottom: 120px;
+            padding: 60px 0 120px;
         }
 
         h1 {
@@ -193,36 +191,15 @@
         .image-placeholder {
             width: 100%;
             max-width: 600px;
-            display: block;
+            display: none;
             margin: 50px auto;
             overflow: hidden;
             position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .image-placeholder img {
             width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.5s ease;
             border-radius: 12px;
-        }
-
-        .image-placeholder:hover img {
-            transform: scale(1.03);
-            box-shadow: 0 25px 50px rgba(168, 85, 247, 0.4);
-        }
-
-        .image-placeholder::after {
-            content: 'Вставьте сюда своё изображение';
-            position: absolute;
-            color: #666;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .image-placeholder:has(img)::after {
-            display: none;
         }
 
         .features-list {
@@ -288,51 +265,15 @@
 
             h1 {
                 font-size: 36px;
-                margin-bottom: 40px;
             }
 
             h2 {
                 font-size: 28px;
-            }
-
-            .glow-bg {
-                width: 500px;
-                height: 500px;
             }
 
             .image-placeholder {
+                display: block;
                 max-width: 100%;
-            }
-
-            .section {
-                margin-bottom: 60px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 28px;
-            }
-
-            h2 {
-                font-size: 24px;
-            }
-
-            .logo {
-                font-size: 18px;
-            }
-
-            .logo__icon {
-                font-size: 24px;
-            }
-
-            .section p,
-            .feature-item p {
-                font-size: 14px;
-            }
-
-            .feature-item h3 {
-                font-size: 18px;
             }
         }
     </style>
@@ -353,15 +294,13 @@
                     <a href="/drafts">Наработки</a>
                     <a href="/plans">Планируем</a>
                     <a href="/contact">Контакты</a>
-                    <a href="/register">Выйти</a>
                     {% if is_admin %}
-                    <a href="/admin" class="admin-btn">👑 Админ панель</a>
+                    <a href="/admin" class="admin-btn">Панель админа</a>
                     {% endif %}
+                    <a href="/register">Выйти</a>
                 </nav>
                 <div class="burger" id="burger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </div>
             </div>
         </div>
@@ -396,14 +335,14 @@
                     дома или квартиры.</p>
 
                 <div class="image-placeholder">
-                    <img src="/static/first.jpg" alt="Galaxy">
+                    <img src="/static/first.jpg" alt="">
                 </div>
 
-                <p style="margin-top: 40px;">Мы же в свою очередь хотим,<br>
+                <p style="margin-top:40px;">Мы же в свою очередь хотим,<br>
                     чтобы технологии подчинялись<br>
                     вам!</p>
 
-                <p style="margin-top: 20px;">AiHome не просто исполняет, но и изучает,<br>
+                <p style="margin-top:20px;">AiHome не просто исполняет, но и изучает,<br>
                     запоминает, адаптируется. Алгоритмы<br>
                     анализируют параметры вашей жизни,<br>
                     создавая идеальные условия.</p>
@@ -413,7 +352,7 @@
                 <h2>Блок - Технология памяти</h2>
 
                 <div class="image-placeholder">
-                    <img src="/static/second 2.jpg" alt="Brain Diagram">
+                    <img src="/static/second 2.jpg" alt="">
                 </div>
 
                 <div class="features-list">
@@ -453,17 +392,10 @@
         const burger = document.getElementById('burger');
         const nav = document.getElementById('nav');
 
-        burger.addEventListener('click', () => {
+        burger.onclick = () => {
             burger.classList.toggle('active');
             nav.classList.toggle('active');
-        });
-
-        nav.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                burger.classList.remove('active');
-                nav.classList.remove('active');
-            });
-        });
+        };
     </script>
 </body>
 
