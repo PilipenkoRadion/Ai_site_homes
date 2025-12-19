@@ -26,7 +26,6 @@
             padding: 0 20px;
         }
 
-        /* Header */
         header {
             padding: 20px 0;
             position: relative;
@@ -73,7 +72,6 @@
             color: #a855f7;
         }
 
-        /* Розовое пятнышко только для десктопных ссылок */
         @media (min-width: 769px) {
             nav a {
                 position: relative;
@@ -134,7 +132,6 @@
             transform: rotate(-45deg) translate(8px, -8px);
         }
 
-        /* Purple glow effect */
         .glow-bg {
             position: fixed;
             top: 0;
@@ -147,7 +144,6 @@
             z-index: 1;
         }
 
-        /* Main content */
         main {
             position: relative;
             z-index: 10;
@@ -175,10 +171,50 @@
             align-items: start;
         }
 
-        .text-content p {
+        .text-content p,
+        .text-content ul {
             font-size: 16px;
             line-height: 1.8;
             margin-bottom: 20px;
+        }
+
+        .text-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .text-content ul li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .text-content ul li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #a855f7;
+            font-weight: bold;
+        }
+
+        .report-header {
+            background: rgba(168, 85, 247, 0.1);
+            border-left: 3px solid #a855f7;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .report-header p {
+            margin: 0;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .section-divider {
+            margin: 60px 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #333, transparent);
         }
 
         .diagram-section {
@@ -207,7 +243,6 @@
             position: relative;
         }
 
-        /* Device mockup */
         .device-mockup {
             width: 220px;
             height: 450px;
@@ -295,7 +330,6 @@
             background: #a855f7;
         }
 
-        /* Footer */
         footer {
             position: fixed;
             bottom: 0;
@@ -309,7 +343,6 @@
             z-index: 10;
         }
 
-        /* Responsive */
         @media (max-width: 1024px) {
             .content-wrapper {
                 grid-template-columns: 1fr;
@@ -403,7 +436,8 @@
                 font-size: 24px;
             }
 
-            .text-content p {
+            .text-content p,
+            .text-content ul {
                 font-size: 14px;
             }
 
@@ -420,15 +454,15 @@
     <header>
         <div class="container">
             <div class="header__content">
-                <a href="/about_product" class="logo">
+                <a href="#" class="logo">
                     <span class="logo__icon">m</span>
                     <span>AiHome | Предпросмотр</span>
                 </a>
                 <nav id="nav">
-                    <a href="{{ url_for('about_product') }}">О продукте</a>
-                    <a href="{{ url_for('drafts') }}" class="active">Наработки</a>
-                    <a href="{{ url_for('plans') }}">Планируем</a>
-                    <a href="{{ url_for('contact') }}">Контакты</a>
+                    <a href="/about_product">О продукте</a>
+                    <a href="/drafts" class="active">Наработки</a>
+                    <a href="/plans">Планируем</a>
+                    <a href="/contact">Контакты</a>
                     <a href="/logout">Выйти</a>
                 </nav>
                 <div class="burger" id="burger">
@@ -446,9 +480,61 @@
 
             <div class="content-wrapper">
                 <div class="text-content">
-                    <h2>Основной блок управления умным домом</h2>
-                    <img src="your-diagram-here.png" alt="Diagram"
-                        style="width: 100%; max-width: 500px; margin: 40px 0; display: none;">
+                    <div class="report-header">
+                        <p><strong>Отчет программиста:</strong> (Выдан 01.12.2025)</p>
+                    </div>
+
+                    <p>Даю отчёт по текущему состоянию проекта «AiHome для умного дома». На данный момент выполнено
+                        следующее:</p>
+
+                    <h2>Структура проекта</h2>
+                    <ul>
+                        <li>Создана структура проекта</li>
+                        <li>Основные модули: mqtt_client.py, rules_engine.py, ml_module.py, cv_module.py</li>
+                        <li>Конфигурационные файлы и requirements.txt подготовлены</li>
+                        <li>Создан скрипт запуска run_brain.bat для удобного старта проекта</li>
+                    </ul>
+
+                    <h2>Интеграция с MQTT</h2>
+                    <ul>
+                        <li>Модуль mqtt_client.py реализует подключение к MQTT-брокеру</li>
+                        <li>Реализована возможность подписки и публикации сообщений по заданным топикам</li>
+                        <li>Пока используется локальный брокер Mosquitto для тестов</li>
+                    </ul>
+
+                    <h2>Модуль правил (ЕСЛИ → ТО)</h2>
+                    <ul>
+                        <li>В rules_engine.py есть базовая система автоматизации по событиям</li>
+                        <li>Пример: включение света при срабатывании датчика движения в заданное время</li>
+                    </ul>
+
+                    <h2>Каркас ML-модуля</h2>
+                    <ul>
+                        <li>Подготовлен модуль для анализа привычек пользователя и прогнозирования</li>
+                        <li>Заготовки функций для классификации, регрессии и работы с временными рядами</li>
+                    </ul>
+
+                    <h2>Каркас CV-модуля</h2>
+                    <ul>
+                        <li>Реализованы заготовки для работы с видеопотоком</li>
+                        <li>Поддержка распознавания лиц и объектов (например, животных) для будущих сценариев</li>
+                    </ul>
+
+                    <div class="section-divider"></div>
+
+                    <h2>Подготовка окружения</h2>
+                    <ul>
+                        <li>Собран и протестирован requirements.txt с актуальными версиями библиотек, совместимыми с
+                            Python 3.11</li>
+                        <li>Создано виртуальное окружение .venv</li>
+                    </ul>
+
+                    <h2>Следующие шаги</h2>
+                    <ul>
+                        <li>Настроить полноценный запуск Mosquitto для проекта и проверку подключения</li>
+                        <li>Подключить реальные датчики и камеры для тестирования автоматизации и CV-модуля</li>
+                        <li>Обучить и интегрировать модели ML для прогнозирования привычек пользователя</li>
+                    </ul>
                 </div>
 
                 <div class="diagram-section">

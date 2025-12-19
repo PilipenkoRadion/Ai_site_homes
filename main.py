@@ -137,17 +137,17 @@ def edit_page(page_name):
 @app.route("/about_product")
 def about_product():
     if "user_name" in session:
-        # Получаем пользователя из БД
         user = User.query.filter_by(user_name=session["user_name"]).first()
-        # Проверяем, является ли пользователь админом
         is_admin = user.is_admin if user else False
+        page_text = EditText.query.get(1)
+
         return render_template(
             "about_product.html",
             user_name=session["user_name"],
-            is_admin=is_admin, # Передаем флаг админа в шаблон
+            is_admin=is_admin,
+            page_text=page_text.text_new if page_text else "Текст не найден",
         )
     return redirect("/register")
-
 
 @app.route("/drafts")
 def drafts():
@@ -203,23 +203,43 @@ def logout():
 
 
 
-@app.route("/edit_text/edit/<int:text_id>", methods=["GET","POST"])
+# @app.route("/edit_text/edit/<int:text_id>", methods=["GET","POST"])
+# @admin_required
+# def edit_text(text_id):
+#     text_new_first = EditText.query.get_or_404(text_id)
+#     if request.method == "POST":
+#         text_new_first.text_new = request.form["text_new"]
+#         try:
+#             db.session.commit()
+#             return redirect(f"/admin/{text_new_first.text_new}")
+#         except:
+#             return "Ошибка, попробуйте ещё раз."
+#     return render_template("admin.html", text_id=text_id)
+
+
+
+
+@app.route("/edit_text/edit/<int:text_id>", methods=["GET", "POST"])
 @admin_required
 def edit_text(text_id):
-    text_new_first = EditText.query.get_or_404(text_id)
+    text_entry = EditText.query.get_or_404(text_id)
+
+    # Названия страниц
+    page_names = {1: "О продукте", 2: "Наработки", 3: "Планируем", 4: "Контакты"}
+
     if request.method == "POST":
-        text_new_first.text_new = request.form["text_new"]
+        text_entry.text_new = request.form["text_new"]
         try:
             db.session.commit()
-            return redirect(f"/admin/{text_new_first.text_new}")
+            return redirect("/admin")
         except:
-            return "Ошибка, попробуйте ещё раз."
-    return render_template("admin.html", text_id=text_id)
+            return "Ошибка при сохранении. Попробуйте ещё раз."
 
-
-
-
-
+    return render_template(
+        "edit_text.html",
+        text=text_entry,
+        page_name=page_names.get(text_id, "Неизвестная страница"),
+    )
 
 
 
@@ -269,15 +289,31 @@ def contact():
 # ====== Initialize DB ======
 with app.app_context():
     db.create_all()
+
+    # Создаем админа
     admin = User.query.filter_by(user_name="admin").first()
     if not admin:
         admin_user = User(
-            user_name="admin", # Логин admin можно поменять
-            password=generate_password_hash("admin123"), # вы можете поменять тут пароль админов пример "admin123"
+            user_name="admin",
+            password=generate_password_hash("admin123"),
             is_admin=True,
         )
         db.session.add(admin_user)
         db.session.commit()
         print("✅ Админ создан: логин 'admin', пароль 'admin123'")
+
+    # Создаем тексты страниц (это должно быть ОТДЕЛЬНО, не внутри if not admin)
+    if EditText.query.count() == 0:
+        pages = [
+            EditText(id=1, text_new="Текст для страницы 'О продукте'"),
+            EditText(id=2, text_new="Текст для страницы 'Наработки'"),
+            EditText(id=3, text_new="Текст для страницы 'Планируем'"),
+            EditText(id=4, text_new="Текст для страницы 'Контакты'"),
+        ]
+        for page in pages:
+            db.session.add(page)
+        db.session.commit()
+        print("✅ Тексты страниц созданы")
+
 if __name__ == "__main__":
     app.run(debug=True)

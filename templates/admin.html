@@ -64,6 +64,57 @@
             background: #444;
         }
 
+        /* Блок редактирования страниц */
+        .edit-pages-section {
+            margin-bottom: 40px;
+        }
+
+        .edit-pages-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #a855f7;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .page-card {
+            padding: 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .page-card:hover {
+            border-color: #a855f7;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .page-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .page-card-desc {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #a855f7;
+        }
+
         .messages-grid {
             display: grid;
             gap: 20px;
@@ -184,6 +235,10 @@
                 align-items: flex-start;
                 gap: 10px;
             }
+
+            .pages-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -195,9 +250,41 @@
                 <h1>📊 Админ панель{% if unread_count > 0 %}<span class="badge">{{ unread_count }}</span>{% endif %}
                 </h1>
             </div>
-            <a href="/logout" class="logout-btn">Выйти</a>
-            <a href="/about_product" class="logout-btn">На главную</a>
+            <div style="display: flex; gap: 10px;">
+                <a href="/about_product" class="logout-btn">На главную</a>
+                <a href="/logout" class="logout-btn">Выйти</a>
+            </div>
         </header>
+
+        <!-- Блок редактирования страниц -->
+        <div class="edit-pages-section">
+            <h2>✏️ Редактировать страницы</h2>
+            <div class="pages-grid">
+                <a href="/edit_text/edit/1" class="page-card">
+                    <div class="page-card-title">📄 О продукте</div>
+                    <div class="page-card-desc">Главная страница</div>
+                </a>
+
+                <a href="/edit_text/edit/2" class="page-card">
+                    <div class="page-card-title">🎨 Наработки</div>
+                    <div class="page-card-desc">Портфолио и работы</div>
+                </a>
+
+                <a href="/edit_text/edit/3" class="page-card">
+                    <div class="page-card-title">📋 Планируем</div>
+                    <div class="page-card-desc">Планы и цели</div>
+                </a>
+
+                <a href="/edit_text/edit/4" class="page-card">
+                    <div class="page-card-title">📞 Контакты</div>
+                    <div class="page-card-desc">Контактная информация</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Заголовок для сообщений -->
+        <h2 class="section-title">📬 Сообщения от пользователей</h2>
+
         <div class="messages-grid">
             {% if messages %}
             {% for message in messages %}
