@@ -69,7 +69,8 @@
             display: block;
             margin-bottom: 10px;
             font-size: 16px;
-            color: #ccc;
+            font-weight: 600;
+            color: #a855f7;
         }
 
         textarea {
@@ -82,6 +83,7 @@
             color: #fff;
             font-size: 15px;
             font-family: 'Courier New', monospace;
+            line-height: 1.6;
             resize: vertical;
             transition: 0.3s;
         }
@@ -92,51 +94,110 @@
             box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
         }
 
-        .btn-group {
+        .form-actions {
             display: flex;
             gap: 15px;
+            justify-content: flex-end;
         }
 
         .btn {
-            padding: 12px 30px;
+            padding: 12px 32px;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
             transition: 0.3s;
+            position: relative;
         }
 
-        .btn-save {
+        .btn-primary {
             background: #a855f7;
             color: #fff;
-            flex: 1;
         }
 
-        .btn-save:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #c084fc;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
         }
 
-        .btn-cancel {
-            background: #333;
-            color: #fff;
-            padding: 12px 24px;
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .btn-cancel:hover {
+        .btn-secondary {
+            background: #333;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
             background: #444;
         }
 
         .info-box {
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid rgba(168, 85, 247, 0.3);
+            background: #1a1a1a;
+            border-left: 4px solid #a855f7;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .char-counter {
+            text-align: right;
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .debug-info {
+            background: #1a1a1a;
+            border: 1px solid #333;
             border-radius: 8px;
             padding: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #ccc;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .debug-info pre {
+            margin: 5px 0;
+            color: #888;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
@@ -147,7 +208,6 @@
             header {
                 flex-direction: column;
                 gap: 15px;
-                align-items: flex-start;
             }
 
             .edit-form {
@@ -159,11 +219,11 @@
                 font-size: 14px;
             }
 
-            .btn-group {
+            .form-actions {
                 flex-direction: column;
             }
 
-            .btn-cancel {
+            .btn {
                 width: 100%;
             }
         }
@@ -177,24 +237,135 @@
             <a href="/admin" class="back-btn">← Назад к панели</a>
         </header>
 
-        <div class="info-box">
-            💡 <strong>Совет:</strong> Используйте HTML теги для форматирования текста. Например: &lt;br&gt; для
-            переноса строки, &lt;strong&gt; для жирного текста.
+        <div id="successMessage" class="success-message">
+            ✅ Изменения успешно сохранены!
         </div>
 
-        <form method="POST" class="edit-form">
+        <div class="info-box">
+            <p>💡 <strong>Совет:</strong> Используйте HTML теги для форматирования текста:</p>
+            <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                <li><code>&lt;h2&gt;Текст&lt;/h2&gt;</code> — большой заголовок</li>
+                <li><code>&lt;h3&gt;Текст&lt;/h3&gt;</code> — средний заголовок</li>
+                <li><code>&lt;p&gt;Текст&lt;/p&gt;</code> — абзац текста</li>
+                <li><code>&lt;strong&gt;Текст&lt;/strong&gt;</code> — жирный текст</li>
+                <li><code>&lt;em&gt;Текст&lt;/em&gt;</code> — курсивный текст</li>
+                <li><code>&lt;br&gt;</code> — перенос строки</li>
+                <li><code>&lt;a href="ссылка"&gt;Текст&lt;/a&gt;</code> — ссылка</li>
+                <li><code>&lt;ul&gt;&lt;li&gt;Пункт&lt;/li&gt;&lt;/ul&gt;</code> — маркированный список</li>
+                <li><code>&lt;ol&gt;&lt;li&gt;Пункт&lt;/li&gt;&lt;/ol&gt;</code> — нумерованный список</li>
+            </ul>
+            <p style="margin-top: 15px; color: #fca5a5;">⚠️ Не забывайте закрывать теги! Например:
+                <code>&lt;p&gt;текст&lt;/p&gt;</code></p>
+        </div>
+
+        <form method="POST" action="" class="edit-form" id="editForm">
             <div class="form-group">
                 <label for="text_new">Содержимое страницы:</label>
-                <textarea id="text_new" name="text_new" placeholder="Введите текст страницы..."
-                    required>{{ text.text_new }}</textarea>
+                <textarea name="text_new" id="text_new" required
+                    placeholder="Введите текст для страницы...">{{ text.text_new if text else '' }}</textarea>
+                <div class="char-counter">
+                    Символов: <span id="charCount">0</span>
+                </div>
             </div>
 
-            <div class="btn-group">
-                <button type="submit" class="btn btn-save">💾 Сохранить изменения</button>
-                <a href="/admin" class="btn btn-cancel">Отмена</a>
+            <div class="form-actions">
+                <a href="/admin" class="btn btn-secondary">Отмена</a>
+                <button type="submit" class="btn btn-primary" id="saveBtn">
+                    💾 Сохранить изменения
+                </button>
             </div>
         </form>
+
+        <!-- Отладочная информация (можно удалить в продакшене) -->
+        <div class="debug-info">
+            <strong>🔍 Отладочная информация:</strong>
+            <pre>ID страницы: {{ text.id if text else 'N/A' }}</pre>
+            <pre>Название: {{ page_name }}</pre>
+            <pre>Текущая длина текста: <span id="currentLength">{{ text.text_new|length if text else 0 }}</span> символов</pre>
+        </div>
     </div>
+
+    <script>
+        // Элементы
+        const form = document.getElementById('editForm');
+        const textarea = document.getElementById('text_new');
+        const charCount = document.getElementById('charCount');
+        const saveBtn = document.getElementById('saveBtn');
+        const successMessage = document.getElementById('successMessage');
+        const currentLength = document.getElementById('currentLength');
+
+        // Счетчик символов
+        function updateCharCount() {
+            const length = textarea.value.length;
+            charCount.textContent = length;
+            currentLength.textContent = length;
+
+            // Визуальная обратная связь
+            if (length > 0) {
+                textarea.style.borderColor = '#a855f7';
+            }
+        }
+
+        textarea.addEventListener('input', updateCharCount);
+        updateCharCount(); // Инициализация при загрузке
+
+        // Обработка отправки формы
+        form.addEventListener('submit', function (e) {
+            console.log('📤 Отправка формы...');
+            console.log('📝 Текст для сохранения:', textarea.value.substring(0, 100) + '...');
+            console.log('📏 Длина текста:', textarea.value.length);
+
+            // Отключаем кнопку при отправке
+            saveBtn.disabled = true;
+            saveBtn.textContent = '⏳ Сохранение...';
+
+            // Если форма отправлена успешно, Flask сделает редирект
+            // Этот код сработает только если что-то пойдет не так
+            setTimeout(() => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Сохранить изменения';
+            }, 3000);
+        });
+
+        // Подтверждение перед уходом со страницы с несохраненными изменениями
+        let initialValue = textarea.value;
+        let formSubmitted = false;
+
+        form.addEventListener('submit', function () {
+            formSubmitted = true;
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (textarea.value !== initialValue && !formSubmitted) {
+                e.preventDefault();
+                e.returnValue = 'У вас есть несохраненные изменения. Вы уверены, что хотите покинуть страницу?';
+                return e.returnValue;
+            }
+        });
+
+        // Автосохранение в localStorage для восстановления при сбое
+        textarea.addEventListener('input', function () {
+            localStorage.setItem('draft_{{ text.id if text else 0 }}', textarea.value);
+        });
+
+        // Восстановление черновика при загрузке
+        window.addEventListener('load', function () {
+            const draft = localStorage.getItem('draft_{{ text.id if text else 0 }}');
+            if (draft && draft !== textarea.value && confirm('Найден несохраненный черновик. Восстановить?')) {
+                textarea.value = draft;
+                updateCharCount();
+            }
+        });
+
+        // Очистка черновика после успешной отправки
+        form.addEventListener('submit', function () {
+            localStorage.removeItem('draft_{{ text.id if text else 0 }}');
+        });
+
+        console.log('✅ Редактор инициализирован');
+        console.log('📄 ID текста:', '{{ text.id if text else "N/A" }}');
+        console.log('📝 Начальная длина:', textarea.value.length);
+    </script>
 </body>
 
 </html>

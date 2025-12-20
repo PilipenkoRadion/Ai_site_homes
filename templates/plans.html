@@ -67,6 +67,20 @@
             font-size: 16px;
             transition: color 0.3s ease;
             position: relative;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        nav a.admin-btn {
+            background: #a855f7;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        nav a.admin-btn:hover {
+            background: #c084fc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
         }
 
         nav a.active {
@@ -75,12 +89,12 @@
 
         /* Розовое пятнышко только для десктопных ссылок */
         @media (min-width: 769px) {
-            nav a {
+            nav a:not(.admin-btn) {
                 position: relative;
                 z-index: 1;
             }
 
-            nav a::before {
+            nav a:not(.admin-btn)::before {
                 content: '';
                 position: absolute;
                 top: 50%;
@@ -95,13 +109,13 @@
                 opacity: 0;
             }
 
-            nav a:hover::before {
+            nav a:not(.admin-btn):hover::before {
                 width: 120px;
                 height: 120px;
                 opacity: 1;
             }
 
-            nav a:hover {
+            nav a:not(.admin-btn):hover {
                 color: #a855f7;
             }
         }
@@ -161,41 +175,41 @@
             margin-bottom: 50px;
         }
 
-        .plan-section {
-            margin-bottom: 60px;
-        }
-
-        .plan-section p {
+        /* Стили для динамического контента */
+        .dynamic-content {
             font-size: 16px;
             line-height: 1.8;
-            margin-bottom: 15px;
         }
 
-        .plan-section strong {
-            font-weight: 600;
-        }
-
-        .highlight {
-            color: #a855f7;
-        }
-
-        h2 {
+        .dynamic-content h2 {
             font-size: 32px;
             font-weight: 700;
-            margin-top: 80px;
+            margin-top: 60px;
             margin-bottom: 30px;
         }
 
-        .meeting-info {
+        .dynamic-content h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 40px;
             margin-bottom: 20px;
         }
 
-        .meeting-info p {
-            font-size: 16px;
-            line-height: 1.8;
+        .dynamic-content p {
+            margin-bottom: 15px;
         }
 
-        .meeting-info strong {
+        .dynamic-content ul,
+        .dynamic-content ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dynamic-content li {
+            margin-bottom: 10px;
+        }
+
+        .dynamic-content strong {
             font-weight: 600;
         }
 
@@ -246,7 +260,7 @@
                 font-size: 36px;
             }
 
-            h2 {
+            .dynamic-content h2 {
                 font-size: 28px;
                 margin-top: 60px;
             }
@@ -267,7 +281,7 @@
                 font-size: 28px;
             }
 
-            h2 {
+            .dynamic-content h2 {
                 font-size: 24px;
             }
 
@@ -275,8 +289,7 @@
                 font-size: 20px;
             }
 
-            .plan-section p,
-            .meeting-info p {
+            .dynamic-content {
                 font-size: 14px;
             }
         }
@@ -298,6 +311,9 @@
                     <a href="{{ url_for('drafts') }}">Наработки</a>
                     <a href="{{ url_for('plans') }}" class="active">Планируем</a>
                     <a href="{{ url_for('contact') }}">Контакты</a>
+                    {% if is_admin %}
+                    <a href="/admin" class="admin-btn">Панель админа</a>
+                    {% endif %}
                     <a href="/logout">Выйти</a>
                 </nav>
                 <div class="burger" id="burger">
@@ -313,29 +329,9 @@
         <div class="container">
             <h1>Планируем</h1>
 
-            <div class="plan-section">
-                <p><strong>*В течение 2 месяцев доделать<br>
-                        MVP без подключения к<br>
-                        физ. устр. через телеграм.</strong></p>
-
-                <p style="margin-top: 30px;"><strong>*Получить первые инвестиции в размере<br>
-                        <span class="highlight">#временно неизвестной</span> рублей<br>
-                        ( для покупки и настройки<br>
-                        устройств, а так же для выдачи<br>
-                        заработной платы в размере:</strong></p>
-
-                <p style="margin-top: 20px;">Программист - ***** руб</p>
-                <p>Аналитик - ***** руб</p>
-            </div>
-
-            <h2>Встречи</h2>
-
-            <div class="meeting-info">
-                <p><strong>*Встреча с Дмитрием<br>
-                        запланирована на 13 или 14 декабря.</strong></p>
-
-                <p style="margin-top: 30px;">Точная информация по встрече будет<br>
-                    известна в течение нескольких дней.</p>
+            <!-- ДИНАМИЧЕСКИЙ КОНТЕНТ ИЗ БАЗЫ ДАННЫХ -->
+            <div class="dynamic-content">
+                {{ page_text|safe }}
             </div>
         </div>
     </main>

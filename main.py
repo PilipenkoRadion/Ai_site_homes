@@ -139,7 +139,20 @@ def about_product():
     if "user_name" in session:
         user = User.query.filter_by(user_name=session["user_name"]).first()
         is_admin = user.is_admin if user else False
+
+     
+        db.session.expire_all()
         page_text = EditText.query.get(1)
+
+
+        if page_text:
+            print(f"🔍 [about_product] ID: {page_text.id}")
+            print(
+                f"📝 [about_product] Текст (первые 100 символов): {page_text.text_new[:100]}"
+            )
+            print(f"📏 [about_product] Полная длина текста: {len(page_text.text_new)}")
+        else:
+            print("❌ [about_product] page_text is None!")
 
         return render_template(
             "about_product.html",
@@ -149,30 +162,79 @@ def about_product():
         )
     return redirect("/register")
 
+
 @app.route("/drafts")
 def drafts():
-    return render_template("drafts.html")
+    if "user_name" in session:
+        user = User.query.filter_by(user_name=session["user_name"]).first()
+        is_admin = user.is_admin if user else False
 
 
+        db.session.expire_all()
+        page_text = EditText.query.get(2) 
+
+    
+        if page_text:
+            print(f"🔍 [drafts] ID: {page_text.id}")
+            print(
+                f"📝 [drafts] Текст (первые 100 символов): {page_text.text_new[:100]}"
+            )
+        else:
+            print("❌ [drafts] page_text is None!")
+
+        return render_template(
+            "drafts.html",
+            user_name=session["user_name"],
+            is_admin=is_admin,
+            page_text=page_text.text_new if page_text else "Текст не найден",
+        )
+    return redirect("/register")
 @app.route("/plans")
 def plans():
-    return render_template("plans.html")
+    if "user_name" in session:
+        user = User.query.filter_by(user_name=session["user_name"]).first()
+        is_admin = user.is_admin if user else False
+
+        db.session.expire_all()
+        page_text = EditText.query.get(3)  
+
+        if page_text:
+            print(f"🔍 [plans] ID: {page_text.id}")
+            print(f"📝 [plans] Текст (первые 100 символов): {page_text.text_new[:100]}")
+            print(f"📏 [plans] Полная длина текста: {len(page_text.text_new)}")
+        else:
+            print("❌ [plans] page_text is None!")
+
+        return render_template(
+            "plans.html",
+            user_name=session["user_name"],
+            is_admin=is_admin,
+            page_text=page_text.text_new if page_text else "Текст не найден",
+        )
+    return redirect("/register")
 
 
 
 
 
-
-
-
-# ====== Admin Panel ======
+# Admin panel
 @app.route("/admin")
 @admin_required
 def admin_panel():
     messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
     unread_count = ContactMessage.query.filter_by(is_read=False).count()
-    return render_template("admin.html", messages=messages, unread_count=unread_count)
-
+    texts = {
+        1: EditText.query.get(1),
+        2: EditText.query.get(2),
+        3: EditText.query.get(3),
+        4: EditText.query.get(4),
+    }
+    return render_template(
+        "admin.html",
+        messages=messages,
+        unread_count=unread_count,
+        texts=texts,
+    )
 
 @app.route("/admin/mark_read/<int:message_id>")
 @admin_required
@@ -203,18 +265,6 @@ def logout():
 
 
 
-# @app.route("/edit_text/edit/<int:text_id>", methods=["GET","POST"])
-# @admin_required
-# def edit_text(text_id):
-#     text_new_first = EditText.query.get_or_404(text_id)
-#     if request.method == "POST":
-#         text_new_first.text_new = request.form["text_new"]
-#         try:
-#             db.session.commit()
-#             return redirect(f"/admin/{text_new_first.text_new}")
-#         except:
-#             return "Ошибка, попробуйте ещё раз."
-#     return render_template("admin.html", text_id=text_id)
 
 
 
@@ -224,17 +274,31 @@ def logout():
 def edit_text(text_id):
     text_entry = EditText.query.get_or_404(text_id)
 
-    # Названия страниц
     page_names = {1: "О продукте", 2: "Наработки", 3: "Планируем", 4: "Контакты"}
 
     if request.method == "POST":
-        text_entry.text_new = request.form["text_new"]
-        try:
-            db.session.commit()
-            return redirect("/admin")
-        except:
-            return "Ошибка при сохранении. Попробуйте ещё раз."
+        new_text = request.form.get("text_new")
 
+        print(f"📥 Получен POST запрос для ID: {text_id}")
+        print(
+            f"📝 Новый текст (первые 100 символов): {new_text[:100] if new_text else 'None'}"
+        )
+
+        if new_text is not None:
+            text_entry.text_new = new_text
+            try:
+                db.session.commit()
+                print(f"✅ Текст ID {text_id} успешно обновлен. Длина: {len(new_text)}")
+                return redirect("/admin")
+            except Exception as e:
+                print(f"❌ Ошибка сохранения: {e}")
+                db.session.rollback()
+                return f"Ошибка при сохранении: {e}", 500
+        else:
+            print(f"⚠️ Текст пустой или None")
+            return "Текст не может быть пустым", 400
+
+    print(f"📄 Отображение формы редактирования для ID: {text_id}")
     return render_template(
         "edit_text.html",
         text=text_entry,
@@ -265,13 +329,19 @@ def edit_text(text_id):
 
 
 
-
-
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
-    text1 = EditText.query.get(1)
-    text2 = EditText.query.get(2)
-    text3 = EditText.query.get(3)
+    is_admin = False
+    if "user_name" in session:
+        user = User.query.filter_by(user_name=session["user_name"]).first()
+        is_admin = user.is_admin if user else False
+    db.session.expire_all()
+    page_text = EditText.query.get(4) 
+    if page_text:
+        print(f"🔍 [contact] ID: {page_text.id}")
+        print(f"📝 [contact] Текст (первые 100 символов): {page_text.text_new[:100]}")
+    else:
+        print("❌ [contact] page_text is None!")
     if request.method == "POST":
         contact_info = request.form.get("contact_info")
         if contact_info and contact_info.strip():
@@ -279,18 +349,28 @@ def contact():
             db.session.add(new_message)
             db.session.commit()
             return render_template(
-                "contact.html", success="Спасибо! Ваши контактные данные отправлены."
+                "contact.html",
+                success="Спасибо! Ваши контактные данные отправлены.",
+                is_admin=is_admin,
+                page_text=page_text.text_new if page_text else "Текст не найден",
             )
         else:
-            return render_template("contact.html", error="Пожалуйста, заполните поле.")
-    return render_template("contact.html", text1=text1, text2=text2, text3=text3)
+            return render_template(
+                "contact.html",
+                error="Пожалуйста, заполните поле.",
+                is_admin=is_admin,
+                page_text=page_text.text_new if page_text else "Текст не найден",
+            )
 
+    return render_template(
+        "contact.html",
+        is_admin=is_admin,
+        page_text=page_text.text_new if page_text else "Текст не найден",
+    )
 
 # ====== Initialize DB ======
 with app.app_context():
     db.create_all()
-
-    # Создаем админа
     admin = User.query.filter_by(user_name="admin").first()
     if not admin:
         admin_user = User(
@@ -302,7 +382,6 @@ with app.app_context():
         db.session.commit()
         print("✅ Админ создан: логин 'admin', пароль 'admin123'")
 
-    # Создаем тексты страниц (это должно быть ОТДЕЛЬНО, не внутри if not admin)
     if EditText.query.count() == 0:
         pages = [
             EditText(id=1, text_new="Текст для страницы 'О продукте'"),

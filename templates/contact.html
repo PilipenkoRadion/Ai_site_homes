@@ -26,7 +26,6 @@
             padding: 0 20px;
         }
 
-        /* Header */
         header {
             padding: 20px 0;
             position: relative;
@@ -67,15 +66,28 @@
             font-size: 16px;
             transition: color 0.3s ease;
             position: relative;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        nav a.admin-btn {
+            background: #a855f7;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        nav a.admin-btn:hover {
+            background: #c084fc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
         }
 
         nav a.active {
             color: #a855f7;
         }
 
-        /* Розовое пятнышко для десктопа */
         @media (min-width: 769px) {
-            nav a::before {
+            nav a:not(.admin-btn)::before {
                 content: '';
                 position: absolute;
                 top: 50%;
@@ -90,13 +102,13 @@
                 opacity: 0;
             }
 
-            nav a:hover::before {
+            nav a:not(.admin-btn):hover::before {
                 width: 120px;
                 height: 120px;
                 opacity: 1;
             }
 
-            nav a:hover {
+            nav a:not(.admin-btn):hover {
                 color: #a855f7;
             }
         }
@@ -144,7 +156,7 @@
         main {
             position: relative;
             z-index: 10;
-            padding: 60px 0;
+            padding: 60px 0 120px;
         }
 
         h1 {
@@ -153,67 +165,62 @@
             margin-bottom: 40px;
         }
 
-        .contact-info {
+        /* Стили для динамического контента */
+        .dynamic-content {
+            font-size: 16px;
+            line-height: 1.8;
             margin-bottom: 50px;
         }
 
-        .contact-info h2 {
-            font-size: 20px;
-            font-weight: 400;
-            margin-bottom: 10px;
+        .dynamic-content h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 20px;
         }
 
-        .telegram-link {
+        .dynamic-content h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .dynamic-content p {
+            margin-bottom: 15px;
+        }
+
+        .dynamic-content a {
             color: #a855f7;
             text-decoration: none;
-            font-size: 20px;
             transition: all 0.3s ease;
-            display: inline-block;
         }
 
-        .telegram-link:hover {
+        .dynamic-content a:hover {
             color: #c084fc;
-            transform: translateX(5px);
         }
 
-        /* Оформление картинки */
-        .custom-image {
-            width: 100%;
-            max-width: 600px;
-            margin: 40px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
-        }
-
-        .custom-image img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 20px;
-            object-fit: cover;
-            transition: all 0.3s ease;
-        }
-
-        /* Эффект при наведении */
-        .custom-image:hover {
-            box-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
-            transform: translateY(-5px);
-        }
-
-        .custom-image:hover img {
-            transform: scale(1.03);
+        .dynamic-content img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 30px 0;
         }
 
         .contact-form {
-            margin-top: 40px;
+            margin-top: 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 40px;
+            background: #0a0a0a;
+            border-radius: 20px;
+            border: 1px solid #333;
+        }
+
+        .contact-form h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #a855f7;
         }
 
         .contact-form p {
@@ -221,6 +228,7 @@
             line-height: 1.6;
             margin-bottom: 20px;
             text-align: center;
+            color: #ccc;
         }
 
         .input-wrapper {
@@ -270,7 +278,6 @@
             transform: translateY(0);
         }
 
-        /* Уведомление */
         .notification {
             position: fixed;
             top: 20px;
@@ -377,6 +384,10 @@
                 left: 10px;
                 top: 10px;
             }
+
+            .contact-form {
+                padding: 30px 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -388,11 +399,11 @@
                 font-size: 20px;
             }
 
-            .telegram-link {
-                font-size: 16px;
+            input[type="text"] {
+                font-size: 14px;
             }
 
-            input[type="text"] {
+            .dynamic-content {
                 font-size: 14px;
             }
         }
@@ -402,7 +413,6 @@
 <body>
     <div class="glow-bg"></div>
 
-    <!-- Уведомление -->
     {% if success %}
     <div class="notification success show" id="notification">
         ✅ {{ success }}
@@ -427,6 +437,9 @@
                     <a href="/drafts">Наработки</a>
                     <a href="/plans">Планируем</a>
                     <a href="/contact" class="active">Контакты</a>
+                    {% if is_admin %}
+                    <a href="/admin" class="admin-btn">Панель админа</a>
+                    {% endif %}
                     <a href="/logout">Выйти</a>
                 </nav>
                 <div class="burger" id="burger">
@@ -442,19 +455,16 @@
         <div class="container">
             <h1>Контакты</h1>
 
-            <div class="contact-info">
-                <h2>SEO Проекта - Нарек Боджукян (17 лет)</h2>
-                <a href="https://t.me/narekus" class="telegram-link">Telegram: @narekus</a>
+            <!-- ДИНАМИЧЕСКИЙ КОНТЕНТ ИЗ БАЗЫ ДАННЫХ -->
+            <div class="dynamic-content">
+                {{ page_text|safe }}
             </div>
 
-            <!-- Аккуратная картинка -->
-            <div class="custom-image">
-                <img src="./static/GROUPS 1.jpg" alt="Ваша картинка">
-            </div>
-
+            <!-- ФОРМА ОБРАТНОЙ СВЯЗИ -->
             <div class="contact-form">
+                <h3>📩 Свяжитесь с нами</h3>
                 <form method="POST" action="/contact">
-                    <p>Чтобы я вам ответил, пожалуйста, оставьте<br>свой "Username" или номер телефона.</p>
+                    <p>Чтобы мы вам ответили, пожалуйста, оставьте<br>свой Username или номер телефона</p>
                     <div class="input-wrapper">
                         <input type="text" name="contact_info" placeholder="@username или +7..." required>
                     </div>
@@ -486,7 +496,6 @@
             });
         });
 
-        // Автоматическое скрытие уведомления
         const notification = document.getElementById('notification');
         if (notification) {
             setTimeout(() => {

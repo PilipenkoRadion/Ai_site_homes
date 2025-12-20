@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AiHome | О продукте</title>
     <style>
-        /* Стили остаются точно как у тебя, я их не трогал */
         * {
             margin: 0;
             padding: 0;
@@ -171,55 +170,38 @@
             margin-bottom: 60px;
         }
 
-        .section {
-            margin-bottom: 80px;
+        .dynamic-content {
+            font-size: 16px;
+            line-height: 1.8;
         }
 
-        h2 {
+        .dynamic-content h2 {
             font-size: 32px;
             font-weight: 700;
+            margin-top: 40px;
             margin-bottom: 20px;
         }
 
-        .section p {
-            font-size: 16px;
-            line-height: 1.8;
+        .dynamic-content h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .dynamic-content p {
             margin-bottom: 15px;
             max-width: 800px;
         }
 
-        .image-placeholder {
-            width: 100%;
-            max-width: 600px;
-            display: none;
-            margin: 50px auto;
-            overflow: hidden;
-            position: relative;
+        .dynamic-content ul,
+        .dynamic-content ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
         }
 
-        .image-placeholder img {
-            width: 100%;
-            border-radius: 12px;
-        }
-
-        .features-list {
-            margin-top: 40px;
-        }
-
-        .feature-item {
-            margin-bottom: 40px;
-        }
-
-        .feature-item h3 {
-            font-size: 20px;
-            font-weight: 600;
+        .dynamic-content li {
             margin-bottom: 10px;
-        }
-
-        .feature-item p {
-            font-size: 16px;
-            line-height: 1.8;
-            color: #ccc;
         }
 
         footer {
@@ -266,15 +248,6 @@
             h1 {
                 font-size: 36px;
             }
-
-            h2 {
-                font-size: 28px;
-            }
-
-            .image-placeholder {
-                display: block;
-                max-width: 100%;
-            }
         }
     </style>
 </head>
@@ -297,7 +270,7 @@
                     {% if is_admin %}
                     <a href="/admin" class="admin-btn">Панель админа</a>
                     {% endif %}
-                    <a href="/register">Выйти</a>
+                    <a href="/logout">Выйти</a>
                 </nav>
                 <div class="burger" id="burger">
                     <span></span><span></span><span></span>
@@ -310,74 +283,9 @@
         <div class="container">
             <h1>О продукте</h1>
 
-            <div class="section">
-                <p>Мы AiHome - одна из первых систем умного<br>
-                    дома с концепцией искусственного<br>
-                    интеллекта, который запоминает ваши<br>
-                    привычки, создавая идеальные условия<br>
-                    для жизни. Просто живите, ваш дом<br>
-                    всё сделает сам.</p>
-            </div>
-
-            <div class="section">
-                <h2>Блок - Визуал</h2>
-                <p>Минималистичный дизайн на маленьком<br>
-                    дисплее, которая будет вписываться<br>
-                    под многие стили дизайна интерьера.</p>
-            </div>
-
-            <div class="section">
-                <h2>Блок - Наше видение.<br>Что мы меняем?</h2>
-                <p>Мы устали от "умных" домов.<br>
-                    Обычная автоматизация заставляет вас<br>
-                    подстраиваться под технологии. Вы просто<br>
-                    становитесь оператором умного<br>
-                    дома или квартиры.</p>
-
-                <div class="image-placeholder">
-                    <img src="/static/first.jpg" alt="">
-                </div>
-
-                <p style="margin-top:40px;">Мы же в свою очередь хотим,<br>
-                    чтобы технологии подчинялись<br>
-                    вам!</p>
-
-                <p style="margin-top:20px;">AiHome не просто исполняет, но и изучает,<br>
-                    запоминает, адаптируется. Алгоритмы<br>
-                    анализируют параметры вашей жизни,<br>
-                    создавая идеальные условия.</p>
-            </div>
-
-            <div class="section">
-                <h2>Блок - Технология памяти</h2>
-
-                <div class="image-placeholder">
-                    <img src="/static/second 2.jpg" alt="">
-                </div>
-
-                <div class="features-list">
-                    <div class="feature-item">
-                        <h3>1. Анонимность</h3>
-                        <p>Сеть сенсоров собирает анонимные<br>
-                            данные: свет, температура, эмоциональная<br>
-                            атмосфера.</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <h3>2. Адаптация</h3>
-                        <p>Система начинает плавно подстраиваться<br>
-                            под обнаруженные привычки и хотелки,<br>
-                            превращая их в персонализированные<br>
-                            сценарии.</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <h3>3. Развитие</h3>
-                        <p>Со временем алгоритмы становятся точнее.<br>
-                            Ваш дом превратится в пространство, где<br>
-                            отражены ваши привычки.</p>
-                    </div>
-                </div>
+            <!-- ДИНАМИЧЕСКИЙ КОНТЕНТ ИЗ БАЗЫ ДАННЫХ -->
+            <div class="dynamic-content">
+                {{ page_text|safe }}
             </div>
         </div>
     </main>
